@@ -1,58 +1,28 @@
-import axios from "axios";
-
 import './App.css';
 import Header from "./components/Header";
 import Main from "./components/Main";
-import Controls from "./components/Controls";
-import {useEffect, useState} from "react";
-import {ALL_COUNTRIES} from "./config";
-import List from "./components/List";
-import Card from "./components/Card";
+import {Route, Switch} from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import Details from "./pages/Details";
+import NotFound from "./pages/NotFound";
+import {useState} from "react";
+
 
 function App() {
-
     const [countries, setCountries] = useState([])
 
-    console.log(countries)
-    useEffect(() => {
-        axios.get(ALL_COUNTRIES).then(
-            ({data}) => setCountries(data)
-        )
-    }, [])
 
     return (
         <>
             <Header/>
             <Main>
-                <Controls/>
-                <List>
-                    {
-                        countries.map(c => {
-                            const countryInfo = {
-                                img: c.flag,
-                                name: c.name,
-                                info: [
-                                    {
-                                        title: 'Population',
-                                        description: c.population.toLocaleString()
-                                    },
-                                    {
-                                        title: 'Region',
-                                        description: c.region
-                                    },
-                                    {
-                                        title: 'Capital',
-                                        description: c.capital
-                                    }
-                                ]
-                            }
-
-                            return (
-                                <Card key={c.name} {...countryInfo}/>
-                            )
-                        })
-                    }
-                </List>
+                <Switch>
+                    <Route exact path='/'>
+                        <HomePage countries={countries} setCountries={setCountries}/>
+                    </Route>
+                    <Route path='/country/:name' component={Details}/>
+                    <Route component={NotFound}/>
+                </Switch>
             </Main>
         </>
     );
