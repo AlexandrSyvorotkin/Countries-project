@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import axios from "axios";
 import {useEffect} from "react";
 
@@ -11,8 +11,23 @@ import {ALL_COUNTRIES} from "../config";
 
 const HomePage = ({countries, setCountries}) => {
 
+    const [filteredCountries, setFilteredCountries] = useState([countries])
+
     const {push} = useHistory()
 
+    const handleSearch = (search, region) => {
+        let data = [...countries]
+
+        if (region) {
+            data = data.filter(c => c.region.includes(region))
+        }
+
+        if (search) {
+            data = data.filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
+        }
+
+        setFilteredCountries(data)
+    }
 
     useEffect(() => {
         if (!countries.length)
@@ -22,17 +37,17 @@ const HomePage = ({countries, setCountries}) => {
 
     return (
         <>
-            <Controls/>
+            <Controls onSearch={handleSearch}/>
             <List>
                 {
-                    countries.map(c => {
+                    filteredCountries.map(c => {
                         const countryInfo = {
                             img: c.flag,
                             name: c.name,
                             info: [
                                 {
                                     title: 'Population',
-                                    description: c.population.toLocaleString()
+                                    description: c.population
                                 },
                                 {
                                     title: 'Region',
